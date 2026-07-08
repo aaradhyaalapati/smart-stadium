@@ -23,14 +23,28 @@ export async function runLiveLoop(
   message: string,
   history: Content[] = []
 ): Promise<string> {
+  let modelName = 'gemini-1.5-flash';
+  let requestOptions: any = undefined;
+
+  if (apiKey.startsWith('sk-or-')) {
+    modelName = 'google/gemini-2.5-flash';
+    requestOptions = {
+      baseUrl: 'https://openrouter.ai/api/v1',
+      customHeaders: {
+        'HTTP-Referer': 'http://localhost:5173',
+        'X-Title': 'Smart Stadium Assistant'
+      }
+    };
+  }
+
   const genAI = new GoogleGenerativeAI(apiKey);
   
   // We use gemini-1.5-flash as it is fast and supports tool calling
   const model = genAI.getGenerativeModel({
-    model: 'gemini-1.5-flash',
+    model: modelName,
     systemInstruction: SYSTEM_PROMPT,
     tools: [{ functionDeclarations: assistantTools }]
-  });
+  }, requestOptions);
 
   let currentHistory: Content[] = [...history];
 
