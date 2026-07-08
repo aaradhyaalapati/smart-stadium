@@ -15,4 +15,8 @@ Our testing strategy follows a rigorous pyramid approach focusing heavily on det
    - **Template Integrity:** Fails hard if unrendered placeholders (e.g., `{venue}`) leak into the final output. This enforces that the fallback responses are always complete and grammatically safe for screen readers.
 
 ## Future Layers
-As the AI/Assistant layers and Express API routes are integrated, testing will focus on integration and end-to-end functionality, but the core domain logic will remain thoroughly protected by these deterministic unit tests.
+As the AI/Assistant layers and Express API routes are integrated, testing focuses on integration and end-to-end functionality, but the core domain logic remains thoroughly protected by these deterministic unit tests.
+
+## CI and End-to-End Validation
+- **End-to-End (E2E) Path Validation**: We rigorously test the dual-mode architecture in `src/api/api.e2e.test.ts`. This involves seeding known data, simulating live LLM success paths via mocked clients, injecting errors to simulate API failures, and validating the system’s seamless degradation to the offline fallback engine.
+- **Continuous Integration (CI)**: Our `.github/workflows/ci.yml` strictly enforces linting (`eslint`, `oxlint`), typechecking (`tsc --noEmit`), and blocks merges if coverage drops below **100%** on statements, branches, functions, and lines across the entire codebase. This guarantees that test rigor remains uncompromised as the codebase evolves.

@@ -37,6 +37,25 @@ describe('liveEngine iteration loop', () => {
     expect(res).toBe('Final Answer');
   });
 
+  it('resolves empty string when text() returns falsy', async () => {
+    const mockGenerateContent = jest.fn().mockResolvedValue({
+      response: {
+        functionCalls: () => [],
+        text: () => '',
+        candidates: [{ content: { parts: [{ text: '' }] } }]
+      }
+    });
+
+    (GoogleGenerativeAI as jest.Mock).mockImplementation(() => ({
+      getGenerativeModel: () => ({
+        generateContent: mockGenerateContent
+      })
+    }));
+
+    const res = await runLiveLoop('dummy-key', 'hello');
+    expect(res).toBe('');
+  });
+
   it('executes tools and loops until text is returned', async () => {
     // Setup a sequence: First call returns a function call, Second returns text.
     let callCount = 0;
@@ -88,5 +107,47 @@ describe('liveEngine iteration loop', () => {
     }));
 
     await expect(runLiveLoop('dummy-key', 'hello')).rejects.toThrow('ITERATION_CAP_EXCEEDED');
+  });
+
+  it('throws TIMEOUT if generation takes too long', async () => {
+    jest.useFakeTimers();
+    (GoogleGenerativeAI as jest.Mock).mockImplementation(() => ({
+      getGenerativeModel: () => ({
+        generateContent: () => new Promise(() => {}) // never resolves
+      })
+    }));
+
+    const promise = runLiveLoop('dummy-key', 'hello');
+    jest.advanceTimersByTime(8001);
+    await expect(promise).rejects.toThrow('TIMEOUT');
+    jest.useRealTimers();
+  });
+
+  it('rejects if generateContent throws', async () => {
+    (GoogleGenerativeAI as jest.Mock).mockImplementation(() => ({
+      getGenerativeModel: () => ({
+        generateContent: jest.fn().mockRejectedValue(new Error('API Error'))
+      })
+    }));
+
+    await expect(runLiveLoop('dummy', 'hello')).rejects.toThrow('API Error');
+  });
+
+  it('throws error if candidate content is missing', async () => {
+    const mockGenerateContent = jest.fn().mockResolvedValue({
+      response: {
+        functionCalls: () => [{ name: 'getVenueInfo', args: {} }],
+        text: () => '',
+        candidates: []
+      }
+    });
+
+    (GoogleGenerativeAI as jest.Mock).mockImplementation(() => ({
+      getGenerativeModel: () => ({
+        generateContent: mockGenerateContent
+      })
+    }));
+
+    await expect(runLiveLoop('dummy-key', 'hello')).rejects.toThrow('No candidate content returned');
   });
 });

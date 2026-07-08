@@ -45,8 +45,12 @@ apiRouter.post('/chat', enforceRateLimit, async (req: Request, res: Response) =>
       venueId: parsed.profile.venueId
     });
   } catch (err: any) {
-    if (err instanceof z.ZodError || (err && Array.isArray(err.errors))) {
-      const details = Array.isArray(err.errors) ? err.errors.map((e: any) => `${e.path ? e.path.join('.') : 'unknown'}: ${e.message}`) : [];
+    if (err instanceof z.ZodError) {
+      const details = err.issues.map((e: any) => `${e.path?.length ? e.path.join('.') : 'unknown'}: ${e.message}`);
+      return res.status(400).json({ error: 'Invalid request payload', details });
+    }
+    if (err && Array.isArray(err.errors)) {
+      const details = err.errors.map((e: any) => `${e.path?.length ? e.path.join('.') : 'unknown'}: ${e.message}`);
       return res.status(400).json({ error: 'Invalid request payload', details });
     }
     // Any other error (e.g. 400 from our own backend we purposely re-raised)

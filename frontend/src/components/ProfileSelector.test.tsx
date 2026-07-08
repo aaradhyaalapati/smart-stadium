@@ -26,15 +26,26 @@ describe('ProfileSelector', () => {
     expect(onChange).toHaveBeenCalledWith({ venueId: 'v-metlife' });
   });
 
-  it('calls onChange when needs are toggled', async () => {
+  it('calls onChange when needs are toggled and needs is undefined', async () => {
     const onChange = vi.fn();
-    render(<ProfileSelector profile={{ needs: [] }} onChange={onChange} />);
+    render(<ProfileSelector profile={{}} onChange={onChange} />);
     
     const user = userEvent.setup();
     const checkbox = screen.getByLabelText('wheelchair');
     await user.click(checkbox);
     
     expect(onChange).toHaveBeenCalledWith({ needs: ['wheelchair'] });
+  });
+
+  it('calls onChange when needs are toggled', async () => {
+    const onChange = vi.fn();
+    render(<ProfileSelector profile={{ needs: [] }} onChange={onChange} />);
+    
+    const user = userEvent.setup();
+    const checkbox = screen.getByLabelText('braille');
+    await user.click(checkbox);
+    
+    expect(onChange).toHaveBeenCalledWith({ needs: ['braille'] });
   });
 
   it('calls onChange to remove need when unchecked', async () => {

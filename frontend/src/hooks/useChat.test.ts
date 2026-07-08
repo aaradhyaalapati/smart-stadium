@@ -73,6 +73,22 @@ describe('useChat hook', () => {
     expect(result.current.messages).toHaveLength(1); // User message was added
   });
 
+  it('handles API error with message instead of error', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      json: async () => ({ message: 'Different error format' })
+    });
+
+    const { result } = renderHook(() => useChat());
+    
+    await act(async () => {
+      await result.current.sendMessage('Hello', { language: 'en' });
+    });
+
+    expect(result.current.loading).toBe(false);
+    expect(result.current.error).toBe('Different error format');
+  });
+
   it('handles network error', async () => {
     mockFetch.mockRejectedValueOnce(new Error('Network error'));
 

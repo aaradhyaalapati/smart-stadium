@@ -89,12 +89,44 @@ describe('API Routes', () => {
   it('POST /api/chat rejects unknown fields via strict schema', async () => {
     const payload = {
       message: 'Hello',
-      profile: {},
+      profile: { venueId: 'v-metlife' },
       maliciousField: 'exploit'
     };
     const res = await request(app).post('/api/chat').send(payload);
     expect(res.status).toBe(400);
+    console.log(res.body);
     expect(res.body.error).toBe('Invalid request payload');
+    expect(Array.isArray(res.body.details)).toBe(true);
+    expect(res.body.details.length).toBeGreaterThan(0);
+    expect(res.body.details[0]).toContain('maliciousField');
+  });
+
+  it('POST /api/chat rejects empty message', async () => {
+    const payload = {
+      message: '',
+      profile: { venueId: 'v-metlife' }
+    };
+    const res = await request(app).post('/api/chat').send(payload);
+    expect(res.status).toBe(400);
+    expect(res.body.details[0]).toContain('message');
+  });
+
+  it('POST /api/chat handles custom error with errors array', async () => {
+    (answer as jest.Mock).mockRejectedValueOnce({ 
+      errors: [
+        { message: 'Custom error without path' },
+        { path: ['my', 'field'], message: 'Custom error with path' }
+      ] 
+    });
+    
+    const payload = {
+      message: 'Crash',
+      profile: {}
+    };
+    const res = await request(app).post('/api/chat').send(payload);
+    expect(res.status).toBe(400);
+    expect(res.body.details[0]).toBe('unknown: Custom error without path');
+    expect(res.body.details[1]).toBe('my.field: Custom error with path');
   });
 
   it('POST /api/chat handles generic backend errors cleanly', async () => {
