@@ -1,0 +1,81 @@
+[
+  {
+    "id": "v-metlife",
+    "name": "MetLife Stadium",
+    "city": "New York/New Jersey",
+    "country": "USA",
+    "capacity": 82500,
+    "gates": [
+      {
+        "name": "Gate A",
+        "accessible": true,
+        "notes": "Ramp access available"
+      },
+      {
+        "name": "Gate B",
+        "accessible": false
+      },
+      {
+        "name": "Gate C",
+        "accessible": true,
+        "notes": "Elevator access nearby"
+      }
+    ],
+    "accessibilityServices": {
+      "sensoryRoom": true,
+      "assistiveListening": true,
+      "visionSupport": true,
+      "elevators": true,
+      "accessibleRestrooms": true,
+      "verified": true
+    },
+    "generalServices": {
+      "water": true,
+      "firstAid": true,
+      "nursingRoom": true,
+      "prayerRoom": true
+    },
+    "matchdayInfo": {
+      "match": "Final",
+      "kickoffTime": "2026-07-19T15:00:00Z",
+      "gatesOpen": "2026-07-19T11:00:00Z"
+    }
+  },
+  {
+    "id": "v-azteca",
+    "name": "Estadio Azteca",
+    "city": "Mexico City",
+    "country": "Mexico",
+    "capacity": 83264,
+    "gates": [
+      {
+        "name": "Puerta 1",
+        "accessible": true,
+        "notes": "Main accessible entrance"
+      },
+      {
+        "name": "Puerta 2",
+        "accessible": false
+      }
+    ],
+    "accessibilityServices": {
+      "sensoryRoom": false,
+      "assistiveListening": false,
+      "visionSupport": false,
+      "elevators": true,
+      "accessibleRestrooms": true,
+      "verified": true
+    },
+    "generalServices": {
+      "water": true,
+      "firstAid": true,
+      "nursingRoom": false,
+      "prayerRoom": false
+    },
+    "matchdayInfo": {
+      "match": "Opening Match",
+      "kickoffTime": "2026-06-11T12:00:00Z",
+      "gatesOpen": "2026-06-11T08:00:00Z"
+    }
+  }
+]
