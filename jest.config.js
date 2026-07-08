@@ -8,6 +8,8 @@ module.exports = {
     'src/tools/**/*.ts',
     'src/offline/**/*.ts',
     'src/assistant/**/*.ts',
+    'src/api/**/*.ts',
+    'src/middleware/**/*.ts',
     '!src/**/*.test.ts'
   ],
   coverageThreshold: {
